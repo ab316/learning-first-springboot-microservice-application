@@ -1,6 +1,7 @@
 package com.learning.gallery.rest;
 
 import com.learning.gallery.model.Gallery;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,14 +26,13 @@ public class HomeController {
         return "Hello from Gallery service running at port: " + env.getProperty("local.server.port");
     }
 
-    @GetMapping(
-            value="/gallery/{id}",
-            produces = "application/json"
-    )
+    @HystrixCommand(fallbackMethod = "fallback")
+    @GetMapping(value = "/gallery/{id}", produces = "application/json")
     public Gallery getGallery(@PathVariable final int id) {
         var gallery = new Gallery();
         gallery.setId(id);
 
+        @SuppressWarnings("unchecked")
         List<Object> images = restTemplate.getForObject("http://image-service/images", List.class);
         gallery.setImages(images);
         return gallery;
@@ -41,5 +41,9 @@ public class HomeController {
     @RequestMapping("/admin")
     public String homeAdmin() {
         return "This is admin area of Gallery running at port: " + env.getProperty("local.server.port");
+    }
+
+    public Gallery fallback(int galleryId, Throwable hysterixCommand) {
+        return new Gallery(galleryId);
     }
 }

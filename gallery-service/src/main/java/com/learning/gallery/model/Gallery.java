@@ -6,6 +6,10 @@ public class Gallery {
     private int id;
     private List<Object> images;
 
+    public Gallery() { }
+
+    public Gallery(int galleryId) { }
+
     public int getId() {
         return id;
     }
