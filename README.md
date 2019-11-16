@@ -45,3 +45,7 @@ Make the following request with the given header
 ## Other Features
 Try taking down the image and service, wait for 30 seconds and making the above request to
 Gallery service again. This time, the gallery service will return a fallback response.
+
+
+## Future Work
+* Integrate the services with the ELK stack
